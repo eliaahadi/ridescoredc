@@ -1,0 +1,15 @@
+flowchart TD
+  A["DC Open Data / OSM / Counts<br/>(roads, lanes, speed, crashes)"] --> B["Ingest scripts<br/>src/cli/fetch_dc_data.py"]
+  B --> C["Standardize & join to segments<br/>(IDs, CRS, columns)"]
+  C --> D["Feature engineering<br/>(crash_rate, facility flags, exposure)"]
+  E["Rulesets (YAML)<br/>/rulesets/lts.yml<br/>/rulesets/ridescore_v1.yml"]
+  E --> F["Scoring<br/>(LTS, composite RideScore)"]
+  D --> F
+  F --> G["Processed datasets<br/>data/processed/segments.geojson<br/>(lts_level, ridescore_v1, etc.)"]
+  H["Schemas (JSON)<br/>/schema/*.schema.json"] -->|validate| G
+  I["Layer configs<br/>/layers/categories/*.json"] --> J["Web map (Leaflet/MapLibre)"]
+  G --> J
+  subgraph CI
+    K[Lint & tests]-->L[Schema checks]
+  end
+  G --> CI
